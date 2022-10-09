@@ -7,6 +7,8 @@ const formBud = document.querySelector("#presu");
 
 const menu = document.querySelector(".contenido-principal");
 
+let arrayGastos = [];
+
 eventListeners();
 function eventListeners() {
   document.addEventListener("DOMContentLoaded", questionBudget);
@@ -75,7 +77,7 @@ class UI {
 
     setTimeout(() => {
       divMensaje.remove();
-    }, 2000);
+    }, 3000);
   }
 
   addGastoListado(gastos) {
@@ -103,7 +105,10 @@ class UI {
       nuevoGasto.appendChild(btnDelete);
 
       gastoListado.appendChild(nuevoGasto);
-    });
+
+      arrayGastos.push(gasto);
+      guardarDb();
+    }); // a local ?
   }
 
   cleanHTML() {
@@ -154,6 +159,7 @@ function questionBudget() {
 
     ui.insertBudget(budget);
   });
+  pintarDB();
 }
 
 function addGasto(e) {
@@ -163,10 +169,10 @@ function addGasto(e) {
   const cantidad = Number(document.querySelector("#cantidad").value);
 
   if (name === "" || cantidad === "") {
-    ui.printAlert("ambos campos son obligatorios", "error");
+    ui.printAlert("Ambos campos son obligatorios", "error");
     return;
   } else if (cantidad <= 0 || isNaN(cantidad)) {
-    ui.printAlert("cantidad No valida", "error");
+    ui.printAlert("Cantidad No valida", "error");
     return;
   }
 
@@ -177,7 +183,7 @@ function addGasto(e) {
   };
 
   budget.nuevoGasto(gasto);
-  ui.printAlert("gasto agregado");
+  ui.printAlert("Gasto agregado");
 
   const { gastos, restante } = budget;
   ui.addGastoListado(gastos);
@@ -188,12 +194,25 @@ function addGasto(e) {
 
   formulario.reset();
   // intento de agregado de local
-  sincroStorage();
+  /*
+   */
+  /* arrayGastos.push(budget);
+  guardarDb(); */
 }
 
-function sincroStorage() {
-  localStorage.setItem("gasto", UI);
-}
+const guardarDb = () => {
+  localStorage.setItem("gastoss", JSON.stringify(arrayGastos));
+};
+const pintarDB = () => {
+  arrayGastos = JSON.parse(localStorage.getItem("gastoss"));
+  if (arrayGastos === null) {
+    arrayGastos = [];
+  } else {
+    arrayGastos.forEach((element) => {
+      console.log(element);
+    });
+  }
+};
 
 function deleteGasto(id) {
   budget.deleteGasto(id);
